@@ -1,4 +1,5 @@
-import type { ImageSourcePropType } from "react-native";
+import type { ImageSourcePropType, TextInputProps } from "react-native";
+import type { ReactNode } from "react";
 
 declare global {
     interface AppTab {
@@ -49,6 +50,12 @@ declare global {
 
     interface ListHeadingProps {
         title: string;
+    }
+
+    interface AuthFieldProps extends Omit<TextInputProps, "style" | "className"> {
+        label: string;
+        error?: string;
+        rightAdornment?: ReactNode;
     }
 }
 

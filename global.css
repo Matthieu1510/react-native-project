@@ -217,6 +217,14 @@
         @apply flex-1 font-sans-bold text-primary;
     }
 
+    .settings-section-title {
+        @apply mb-3 text-lg font-sans-bold text-primary;
+    }
+
+    .settings-value {
+        @apply font-sans-bold text-primary;
+    }
+
     .sub-cancel {
         @apply mt-2 items-center rounded-full bg-primary py-4;
     }
@@ -305,8 +313,28 @@
         @apply border-destructive;
     }
 
+    .auth-input-wrap {
+        @apply relative justify-center;
+    }
+
+    .auth-input-secure {
+        @apply pr-16;
+    }
+
+    .auth-input-toggle {
+        @apply absolute right-4;
+    }
+
+    .auth-input-toggle-text {
+        @apply text-xs font-sans-bold uppercase tracking-[0.5px] text-accent;
+    }
+
     .auth-error {
         @apply text-xs font-sans-medium text-destructive;
+    }
+
+    .auth-banner-error {
+        @apply mb-1 text-center text-sm font-sans-semibold text-destructive;
     }
 
     .auth-helper {
@@ -331,6 +359,10 @@
 
     .auth-secondary-button-text {
         @apply text-sm font-sans-semibold text-accent;
+    }
+
+    .auth-secondary-button-disabled {
+        @apply opacity-40;
     }
 
     .auth-divider-row {
