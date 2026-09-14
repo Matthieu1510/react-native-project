@@ -9,6 +9,7 @@ import AuthField from "@/components/AuthField";
 import {BRAND} from "@/constants/data";
 import {colors} from "@/constants/theme";
 import {isValidEmail} from "@/lib/utils";
+import {posthog} from "@/lib/posthog";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -108,6 +109,7 @@ const SignIn = () => {
 
         if (signIn.status === 'complete') {
             await signIn.finalize();
+            posthog?.capture('user_signed_in', {authentication_method: 'password'});
             return;
         }
 
@@ -139,6 +141,7 @@ const SignIn = () => {
 
         if (signIn.status === 'complete') {
             await signIn.finalize();
+            posthog?.capture('user_signed_in', {authentication_method: secondFactorStrategy});
             return;
         }
 
@@ -154,6 +157,10 @@ const SignIn = () => {
             : await signIn.mfa.sendEmailCode();
         setIsResending(false);
         if (error) return;
+        posthog?.capture('verification_code_resent', {
+            authentication_flow: 'sign_in',
+            delivery_method: secondFactorStrategy,
+        });
         setNotice('We sent you a new code.');
     };
 
