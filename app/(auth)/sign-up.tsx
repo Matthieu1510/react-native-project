@@ -9,6 +9,7 @@ import AuthField from "@/components/AuthField";
 import {BRAND} from "@/constants/data";
 import {colors} from "@/constants/theme";
 import {isValidEmail} from "@/lib/utils";
+import {posthog} from "@/lib/posthog";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -70,6 +71,7 @@ const SignUp = () => {
 
         if (signUp.status === 'complete') {
             await signUp.finalize();
+            posthog?.capture('account_created');
             return;
         }
 
@@ -82,6 +84,10 @@ const SignUp = () => {
         const {error} = await signUp.verifications.sendEmailCode();
         setIsResending(false);
         if (error) return;
+        posthog?.capture('verification_code_resent', {
+            authentication_flow: 'sign_up',
+            delivery_method: 'email_code',
+        });
         setNotice('We sent you a new code.');
     };
 

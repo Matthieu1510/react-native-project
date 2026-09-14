@@ -7,6 +7,7 @@ import {useAuth, useUser} from "@clerk/expo";
 import images from "@/constants/images";
 import {colors} from "@/constants/theme";
 import {formatSubscriptionDateTime} from "@/lib/utils";
+import {posthog} from "@/lib/posthog";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -22,6 +23,8 @@ const Settings = () => {
     const handleSignOut = async () => {
         setIsSigningOut(true);
         try {
+            posthog?.capture('sign_out_requested');
+            posthog?.reset();
             await signOut();
         } catch {
             setIsSigningOut(false);

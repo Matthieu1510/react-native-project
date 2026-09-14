@@ -1,9 +1,11 @@
-import {ClerkProvider, useAuth} from "@clerk/expo";
+import {ClerkProvider, useAuth, useUser} from "@clerk/expo";
 import {tokenCache} from "@clerk/expo/token-cache";
 import {SplashScreen, Stack} from "expo-router";
 import '@/global.css';
 import {useFonts} from "expo-font";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
+import {PostHogErrorBoundary, PostHogProvider} from "posthog-react-native";
+import {posthog} from "@/lib/posthog";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -15,6 +17,8 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 const RootNavigator = () => {
     const {isLoaded, isSignedIn} = useAuth();
+    const {user} = useUser();
+    const identifiedUserId = useRef<string | undefined>(undefined);
     const [fontsLoaded] = useFonts({
         'sans-regular': require('../assets/fonts/PlusJakartaSans-Regular.ttf'),
         'sans-bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
@@ -29,6 +33,23 @@ const RootNavigator = () => {
             SplashScreen.hideAsync()
         }
     }, [fontsLoaded, isLoaded])
+
+    useEffect(() => {
+        if (!isSignedIn || !user?.id) {
+            identifiedUserId.current = undefined;
+            return;
+        }
+
+        if (identifiedUserId.current === user.id) return;
+
+        posthog?.identify(user.id, {
+            $set: {
+                ...(user.primaryEmailAddress?.emailAddress ? {email: user.primaryEmailAddress.emailAddress} : {}),
+                ...(user.fullName ? {name: user.fullName} : {}),
+            },
+        });
+        identifiedUserId.current = user.id;
+    }, [isSignedIn, user?.fullName, user?.id, user?.primaryEmailAddress?.emailAddress]);
 
     if (!fontsLoaded || !isLoaded) return null;
 
@@ -45,9 +66,17 @@ const RootNavigator = () => {
 }
 
 export default function RootLayout() {
+    const navigator = <RootNavigator/>;
+
     return (
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-            <RootNavigator/>
+            {posthog ? (
+                <PostHogProvider client={posthog}>
+                    <PostHogErrorBoundary>
+                        {navigator}
+                    </PostHogErrorBoundary>
+                </PostHogProvider>
+            ) : navigator}
         </ClerkProvider>
     );
 }
