@@ -241,6 +241,14 @@
         @apply py-4 text-sm font-sans-medium text-black/60;
     }
 
+    .search-input {
+        @apply mb-5 rounded-2xl border border-border bg-card px-4 py-4 text-base font-sans-medium text-primary;
+    }
+
+    .screen-title {
+        @apply mb-5 text-3xl font-sans-bold text-primary;
+    }
+
     .auth-safe-area {
         @apply flex-1 bg-background;
     }

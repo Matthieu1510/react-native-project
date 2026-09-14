@@ -57,6 +57,12 @@ declare global {
         error?: string;
         rightAdornment?: ReactNode;
     }
+
+    interface CreateSubscriptionModalProps {
+        visible: boolean;
+        onClose: () => void;
+        onCreate: (subscription: Subscription) => void;
+    }
 }
 
 export {};
