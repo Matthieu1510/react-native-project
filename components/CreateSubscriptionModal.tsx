@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import {colors} from "@/constants/theme";
 import {icons} from "@/constants/icons";
+import {posthog} from "@/lib/posthog";
 
 const FREQUENCY_OPTIONS = ['Monthly', 'Yearly'] as const;
 
@@ -77,6 +78,13 @@ const CreateSubscriptionModal = ({visible, onClose, onCreate}: CreateSubscriptio
             color: CATEGORY_COLORS[category],
         });
 
+        posthog?.capture('subscription-created', {
+            subscription_name: name.trim(),
+            subscription_price: numericPrice,
+            subscription_frequency: frequency,
+            subscription_category: category,
+
+        })
         resetForm();
         onClose();
     };
